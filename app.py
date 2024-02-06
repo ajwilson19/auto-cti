@@ -12,4 +12,5 @@ testData = {
 
 st.title("Auto-CTI")
 
-st.dataframe(data=testData, columns=["Threat Level", "Date Found", "Compromized OS", "Compromised App"])
+st.dataframe(data=testData)
+# columns=["Threat Level", "Date Found", "Compromized OS", "Compromised App"])

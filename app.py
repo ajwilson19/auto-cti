@@ -3,9 +3,11 @@ import requests
 
 st.title("Hello World")
 st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
-
+increment = st.text_input("Enter a number")
 if st.button("Source"):
-    response = requests.get(st.secrets["endpoint"])
+    url = st.secrets["endpoint"]
+    url = url + "/" + increment
+    response = requests.get()
     st.write(response.content)
 
 

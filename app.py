@@ -1,4 +1,13 @@
 import streamlit as st
+import requests
+
+st.title("Hello World")
+st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
+
+if st.button("Source"):
+    response = requests.get(st.secrets["endpoint"])
+    st.write(response.content)
+
 
 testData = {
             "Instance 1": ["1", "10/18/2022", "Linux", "ssh"],
@@ -9,9 +18,6 @@ testData = {
             "Instance 6": ["2", "10/18/2022", "iOS", "Messaging"],
             "Instance 7": ["3", "10/18/2022", "Linux", "fail2ban"]
            }
+with st.expander("Data"):
+    st.dataframe(data=testData)
 
-st.title("Hello World")
-st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
-st.button("Source")
-st.dataframe(data=testData)
-# columns=["Threat Level", "Date Found", "Compromized OS", "Compromised App"])

@@ -10,7 +10,8 @@ testData = {
             "Instance 7": ["3", "10/18/2022", "Linux", "fail2ban"]
            }
 
-st.title("Auto-CTI")
-
+st.title("Hello World")
+st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
+st.button("Source")
 st.dataframe(data=testData)
 # columns=["Threat Level", "Date Found", "Compromized OS", "Compromised App"])

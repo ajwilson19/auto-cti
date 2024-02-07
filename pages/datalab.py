@@ -8,7 +8,13 @@ if st.button("Source"):
     url = st.secrets["endpoint"]
     url = url + "/" + increment
     response = requests.get(url).json()
-    st.write(response)
+    for key in response:
+        if key == 'result':
+            st.success(response[key])
+        elif key == 'error':
+            st.error(response[key])
+        else:
+            st.warning(key + response[key])
     with st.expander("JSON"):
         st.json(response)
     

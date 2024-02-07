@@ -1,6 +1,11 @@
 import streamlit as st
 import requests
 
+st.set_page_config(
+    page_title="Auto CTI",
+    #page_icon=
+)
+
 st.title("Hello World")
 st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
 

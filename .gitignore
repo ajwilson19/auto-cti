@@ -1,1 +1,2 @@
-config.toml
+secrets.toml
+.DS_Store

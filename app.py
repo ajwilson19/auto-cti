@@ -3,12 +3,6 @@ import requests
 
 st.title("Hello World")
 st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
-increment = st.text_input("Enter a number")
-if st.button("Source"):
-    url = st.secrets["endpoint"]
-    url = url + "/" + increment
-    response = requests.get(url)
-    st.write(response.content)
 
 
 testData = {

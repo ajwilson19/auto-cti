@@ -1,20 +1,23 @@
 import streamlit as st
 import requests
 
-st.title("Chalice Increment")
+st.title("Chalice API")
 
-increment = st.text_input("Enter a number")
+name = st.text_input("Name")
+age = st.slider("Age", 0, 100, 0, 1)
+json_post = {'name':name, 'age':age}
+
+with st.expander("JSON"):
+    st.code(json_post)
+    
 if st.button("Source"):
-    url = st.secrets["endpoint"]
-    url = url + "/" + increment
-    response = requests.get(url).json()
-    for key in response:
-        if key == 'result':
-            st.success(response[key])
-        elif key == 'error':
-            st.error(response[key])
-        else:
-            st.warning(key + response[key])
-    with st.expander("JSON"):
-        st.json(response)
+    url = st.secrets["endpoint"] + "/api"
+
+    response = requests.post(url, json=json_post)
+    try:
+        response = response.json()
+        message = str(response['name']) + ' will be ' + str(response['age'])
+        st.success(message)
+    except:
+        st.error("API error")
     

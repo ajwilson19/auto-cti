@@ -7,7 +7,7 @@ name = st.text_input("Name")
 age = st.slider("Age", 0, 100, 0, 1)
 json_post = {'name':name, 'age':age}
 
-with st.expander("JSON"):
+with st.expander("Request"):
     st.code(json_post)
     
 if st.button("Source"):
@@ -20,4 +20,7 @@ if st.button("Source"):
         st.success(message)
     except:
         st.error("API error")
+
+    with st.expander("Response"):
+        st.code(response)
     

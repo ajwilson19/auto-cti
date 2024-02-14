@@ -1,23 +1,24 @@
-import streamlit as st
-import requests
+from chalice import Chalice
 
-st.set_page_config(
-    page_title="Auto CTI",
-    #page_icon=
-)
+app = Chalice(app_name='helloworld')
 
-st.title("Hello World")
-st.multiselect("Options", ["Linux", "Windows", "MacOS", "iOS", "Android"])
+@app.route('/')
+def index():
+    return {'hello':'world'}
 
+@app.route('/api', methods=['POST'])
+def api():
+    request = app.current_request
+    try:
+        json_data = request.json_body
+        json_data['age'] = json_data['age']+1
+        return json_data
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
 
-testData = {
-            "Instance 1": ["1", "10/18/2022", "Linux", "ssh"],
-            "Instance 2": ["5", "10/18/2022", "Linux", "ufw"],
-            "Instance 3": ["2", "10/18/2022", "Windows", "Chrome"],
-            "Instance 4": ["3", "10/18/2022", "iOS", "Finder"],
-            "Instance 5": ["1", "10/18/2022", "Windows", "Microsoft Word"],
-            "Instance 6": ["2", "10/18/2022", "iOS", "Messaging"],
-            "Instance 7": ["3", "10/18/2022", "Linux", "fail2ban"]
-           }
-with st.expander("Data"):
-    st.dataframe(data=testData)
+@app.route('/{number}')
+def integer(number):
+    try:
+        return {'result': int(number)+1}
+    except ValueError:
+        return {'error': 'invalid input'}

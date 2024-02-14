@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 
 st.title("Chalice x GPT")
 st.write("See guide [here](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)")
@@ -20,7 +19,7 @@ if st.button(label="Add message"):
 if st.button(label="Reset"):
     st.session_state.messages = []
 
-if messages == []:
+if st.session_state.messages == []:
     st.warning("Please enter a message before requesting response")
 st.code(
 """MODEL = \"gpt-3.5-turbo\"

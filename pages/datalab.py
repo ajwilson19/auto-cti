@@ -1,26 +1,32 @@
 import streamlit as st
 import requests
 
-st.title("Chalice API")
+st.title("Chalice x GPT")
+st.write("See guide [here](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)")
 
-name = st.text_input("Name")
-age = st.slider("Age", 0, 100, 0, 1)
-json_post = {'name':name, 'age':age}
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
+else:
+    messages = st.session_state.messages
 
-with st.expander("Request"):
-    st.code(json_post)
-    
-if st.button("Source"):
-    url = st.secrets["endpoint"] + "/api"
+role = st.selectbox(label="Select Role:", options=["system", "user", "assistant"], index=1)
+content = st.text_input(label="Content:", value="")
 
-    response = requests.post(url, json=json_post)
-    try:
-        response = response.json()
-        message = str(response['name']) + ' will be ' + str(response['age'])
-        st.success(message)
-    except:
-        st.error("API error")
 
-    with st.expander("Response"):
-        st.code(response)
-    
+if st.button(label="Add message"):
+    messages.append({"role": role, "content": content})
+    st.session_state.messages = messages
+
+if st.button(label="Reset"):
+    st.session_state.messages = []
+
+if messages == []:
+    st.warning("Please enter a message before requesting response")
+st.code(
+"""MODEL = \"gpt-3.5-turbo\"
+response = client.chat.completions.create(
+    model=MODEL,
+    messages={},
+    temperature=0,
+)""".format(messages)
+)

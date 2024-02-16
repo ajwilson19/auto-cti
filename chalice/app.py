@@ -1,4 +1,5 @@
 from chalice import Chalice
+import os
 from openai import OpenAI
 import json
 
@@ -10,16 +11,20 @@ def index():
 
 @app.route('/gpt', methods=['POST'])
 def gpt():
+    openai_api_key = os.environ.get('OPENAI_API_KEY')
+    request = app.current_request.json_body
+    
     #ex: {"api_key":"key", "model":"gpt-3.5-turbo", "messages": [], "temperature":0}
-    request = app.current_request
+
     try:
-        json_data = request.json_body
-        client = OpenAI(api_key=json_data['api_key'])
+        
+        client = OpenAI(api_key=openai_api_key)
         response = client.chat.completions.create(
-            model=json_data['model'],
-            messages=json_data['messages'],
-            temperature=json_data['temperature'],
+            model=request['model'],
+            messages=request['messages'],
+            temperature=request['temperature'],
         )
+
         return json.dumps(json.loads(response.model_dump_json()), indent=4)
     except Exception as e:
         return {'success': False, 'error': str(e)}

@@ -20,7 +20,7 @@ messages = [{
 link = st.text_input(label="Link:", value="")
 messages[1]['content'] = f'Here is a URL: {link}'
 
-st.write(messages)
+#st.write(messages)
 
 # if st.button(label="Reset"):
 #     st.session_state.messages = []
@@ -39,9 +39,12 @@ st.code(
 )
 
 if st.button("Generate"):
-    request = {"model":"gpt-4-0613", "messages": messages, "temperature":0}
-    #print(request)
-    url = st.secrets['endpoint'] + "/gpt"
-    response = requests.post(url, json=request)
-    st.write(response)
-    st.code(response.content)
+    with st.spinner("Generating"):
+        request = {"model":"gpt-4-0613", "messages": messages, "temperature":0}
+        url = st.secrets['endpoint'] + "/gpt"
+        response = requests.post(url, json=request).json()
+
+    st.write(response['choices'][0]['message']['content'])
+    st.write(response['usage'])
+
+    

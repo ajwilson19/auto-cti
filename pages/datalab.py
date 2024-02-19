@@ -29,13 +29,16 @@ if st.button("Generate"):
         url = st.secrets['endpoint'] + "/gpt"
         response = requests.post(url, json=request).json()
 
-    st.write(response['choices'][0]['message']['content'])
-    usage = response['usage']
-    in_tokens = usage['prompt_tokens']
-    out_tokens = usage['completion_tokens']
+    try:
+        st.write(response['choices'][0]['message']['content'])
+        usage = response['usage']
+        in_tokens = usage['prompt_tokens']
+        out_tokens = usage['completion_tokens']
 
-    estimate = (in_tokens / 1000) * 0.03 + (out_tokens / 1000) * 0.06
-    st.warning(f'Estimated cost: ${estimate}')
+        estimate = (in_tokens / 1000) * 0.03 + (out_tokens / 1000) * 0.06
+        st.warning(f'Estimated cost: ${estimate}')
+    except:
+        st.error("API Error")
 
 
     

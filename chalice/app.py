@@ -7,7 +7,7 @@ app = Chalice(app_name='helloworld')
 openai_api_key = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return {'hello':'world'}
 

@@ -12,12 +12,43 @@ system_prompt = '''You are a cyber threat intelligence analyst who helps extract
                     relevant information about the entities such as threat actors and malware. A critical component of 
                     your response is what actionable steps are identified in the article. Please include information on 
                     potential patches or solutions and list any relevant cves. Add relevant tags that can be used to easily
-                    filter the information you extracted. Provide this response in formatted json.'''
+                    filter the information you extracted. You may include information on who is reporting or providing guidance
+                    but do not include company specific products unless it is explicitly said that it is the only viable solution
+                    
+                    You will provide this information in the following JSON schema
+                    The summary should be easily digestable by cybersecurity analysts or system admins and be around 50 words
+
+                    
+                    {
+                        "summary": "",
+                        "threat_actors": [
+                            {
+                                "name": "",
+                                "aliases": ["", ""],
+                                "country": ""
+                            }
+                        ],
+                        "malware": ["", ""],
+                        "vulnerabilities": [
+                            {
+                                "cve_id": "CVE-XXX-XXXXX",
+                                "description": ""
+                            }
+                        ],
+                        "actionable_steps": [
+                            "",
+                            "",
+                            "",
+                            ""
+                        ],
+                        "tags": ["","","","","",""]
+                    }
+'''
 
 messages = [{"role": "system", "content": system_prompt},
             {"role": 'user', "content":""}]
 
-text = st.text_input(label="Link:", value="")
+text = st.text_input(label="Text:", value="")
 messages[1]['content'] =  text
 
 st.code(
@@ -33,7 +64,11 @@ if st.button("Generate"):
         start_time = time()
         request = {"model":"gpt-3.5-turbo", "messages": messages, "temperature":0}
         url = st.secrets['endpoint'] + "/gpt"
-        response = requests.post(url, json=request).json()
+
+        # header = {
+        #     'x-api-key': st.secrets['key']
+        # }
+        response = requests.post(url, json=request).json() #headers=header
 
     try:
         end_time = time()
@@ -53,7 +88,7 @@ if st.button("Generate"):
 
         
     except:
-        st.error("API Error")
+        st.error(response)
 
 
     

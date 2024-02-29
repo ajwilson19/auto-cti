@@ -13,37 +13,83 @@ system_prompt = '''You are a cyber threat intelligence analyst who helps extract
                     your response is what actionable steps are identified in the article. Please include information on 
                     potential patches or solutions and list any relevant cves. Add relevant tags that can be used to easily
                     filter the information you extracted. You may include information on who is reporting or providing guidance
-                    but do not include company specific products unless it is explicitly said that it is the only viable solution
-                    
-                    You will provide this information in the following JSON schema
-                    The summary should be easily digestable by cybersecurity analysts or system admins and be around 50 words
-
-                    
+                    but do not include company specific products unless it is explicitly said that it is the only viable solution.
+                    Provide the information you extracted as a json object that follows the rules of the following schema:
                     {
-                        "summary": "",
-                        "threat_actors": [
-                            {
-                                "name": "",
-                                "aliases": ["", ""],
-                                "country": ""
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "type": "object",
+                        "properties": {
+                        "threat_actors": {
+                            "type": "array",
+                            "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                "type": "string"
+                                },
+                                "aliases": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                                },
+                                "country": {
+                                "type": "string"
+                                }
+                            },
+                            "required": ["name", "aliases", "country"],
+                            "additionalProperties": false
                             }
-                        ],
-                        "malware": ["", ""],
-                        "vulnerabilities": [
-                            {
-                                "cve_id": "CVE-XXX-XXXXX",
-                                "description": ""
+                        },
+                        "malware": {
+                            "type": "array",
+                            "items": {
+                            "type": "string"
                             }
-                        ],
-                        "actionable_steps": [
-                            "",
-                            "",
-                            "",
-                            ""
-                        ],
-                        "tags": ["","","","","",""]
-                    }
-'''
+                        },
+                        "vulnerabilities": {
+                            "type": "array",
+                            "items": {
+                            "type": "object",
+                            "properties": {
+                                "cve_id": {
+                                "type": "string"
+                                },
+                                "description": {
+                                "type": "string"
+                                }
+                            },
+                            "required": ["cve_id", "description"],
+                            "additionalProperties": false
+                            }
+                        },
+                        "actionable_steps": {
+                            "type": "array",
+                            "items": {
+                            "type": "string"
+                            }
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                            "type": "string"
+                            }
+                        },
+                        "summary": {
+                            "type": "object",
+                            "properties": {
+                            "summary": {
+                                "type": "string",
+                                "maxLength": 360
+                            }
+                            },
+                            "required": ["summary"],
+                            "additionalProperties": false
+                        }
+                        },
+                        "required": ["threat_actors", "malware", "vulnerabilities", "actionable_steps", "tags", "summary"],
+                        "additionalProperties": false
+                    }'''
 
 messages = [{"role": "system", "content": system_prompt},
             {"role": 'user', "content":""}]

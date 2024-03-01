@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 from time import time
+import WebScrape
+import json
 
 st.title("GPT in Chalice")
 # with st.expander("Resources"):
@@ -94,47 +96,54 @@ system_prompt = '''You are a cyber threat intelligence analyst who helps extract
 messages = [{"role": "system", "content": system_prompt},
             {"role": 'user', "content":""}]
 
-text = st.text_input(label="Text:", value="")
-messages[1]['content'] =  text
+link = st.text_input(label="Link:", value="")
 
-st.code(
-    """response = client.chat.completions.create(
-        model=\'gpt-3.5-turbo\',
-        messages={},
-        temperature=0,
-    )""".format(messages)
-)
-
-if st.button("Generate"):
-    with st.spinner("Generating"):
-        start_time = time()
-        request = {"model":"gpt-3.5-turbo", "messages": messages, "temperature":0}
-        url = st.secrets['endpoint'] + "/gpt"
-
-        # header = {
-        #     'x-api-key': st.secrets['key']
-        # }
-        response = requests.post(url, json=request).json() #headers=header
-
-    try:
-        end_time = time()
-        elapsed_time = end_time-start_time
-
-        st.write(response['choices'][0]['message']['content'])
-
-        usage = response['usage']
-        in_tokens = usage['prompt_tokens']
-        out_tokens = usage['completion_tokens']
-        estimate = (in_tokens / 1000) * 0.0005 + (out_tokens / 1000) * 0.0015
-
-        with st.expander("Stats"):
-            st.write(f"Total Tokens: {in_tokens+out_tokens}")
-            st.write(f"Estimated Cost: {estimate}")
-            st.write(f"Time Elapsed: {elapsed_time:.2f} seconds")
-
-        
-    except:
-        st.error(response)
+if link != '':
+    with st.spinner("Scraping Text"):
+        text = WebScrape.scrape_article(link)
+        with st.expander("Text"):
+            st.write(text)
 
 
-    
+
+    messages[1]['content'] =  text
+
+    st.code(
+        """response = client.chat.completions.create(
+            model=\'gpt-3.5-turbo\',
+            messages={},
+            temperature=0,
+        )""".format(messages)
+    )
+
+    if st.button("Generate"):
+        with st.spinner("Generating"):
+            start_time = time()
+            request = {"model":"gpt-3.5-turbo", "messages": messages, "temperature":0}
+            url = st.secrets['endpoint'] + "/gpt"
+
+            # header = {
+            #     'x-api-key': st.secrets['key']
+            # }
+            response = requests.post(url, json=request).json() #headers=header
+
+        try:
+            end_time = time()
+            elapsed_time = end_time-start_time
+
+            st.write(json.loads(response['choices'][0]['message']['content']))
+
+            usage = response['usage']
+            in_tokens = usage['prompt_tokens']
+            out_tokens = usage['completion_tokens']
+            estimate = (in_tokens / 1000) * 0.0005 + (out_tokens / 1000) * 0.0015
+
+            with st.expander("Stats"):
+                st.write(f"Total Tokens: {in_tokens+out_tokens}")
+                st.write(f"Estimated Cost: {estimate}")
+                st.write(f"Time Elapsed: {elapsed_time:.2f} seconds")
+
+            
+        except:
+            st.error(response)
+

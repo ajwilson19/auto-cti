@@ -71,4 +71,4 @@ def format_article_string(article_string):
     eidx = article_string.find("\" data-page-track=")
     return article_string[sidx:eidx]
 
-scrape_link("https://unit42.paloaltonetworks.com/category/threat-briefs-assessments/")
+#scrape_link("https://unit42.paloaltonetworks.com/category/threat-briefs-assessments/")

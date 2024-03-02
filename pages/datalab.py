@@ -48,7 +48,6 @@ if link != '':
 
 
         result['metadata'] = {"link": link, "time": elapsed_time, "cost": estimate}
-        print(result)
 
         collection.insert_one(result)
         st.success("Uploaded to DB")

@@ -1,9 +1,20 @@
 import streamlit as st
 import requests
 from time import time
-import WebScrape
 import json
 
+import WebScrape
+from pymongo import MongoClient
+
+# potentially obfuscate + true handling
+try:
+    client = MongoClient(st.secrets['uri'])
+    db = client['test']
+    collection = db['cti-blob']
+except:
+    st.warning("DB offline")
+
+# session state?
 prompt = open("source/system_prompt.txt", 'r').read()
 schema = json.load(open("source/schema.json", 'r'))
 
@@ -13,36 +24,34 @@ messages = [{"role": "system", "content": system_prompt},
 
 link = st.text_input(label="Link:", value="")
 
+#+value checking for links
 if link != '':
-    with st.spinner("Scraping Text"):
-        text = WebScrape.scrape_article(link)
-        with st.expander("Text"):
-            st.write(text)
+    start_time = time()
+    with st.spinner("Scraping Text"): 
+        messages[1]['content'] =  WebScrape.scrape_article(link)
 
-    messages[1]['content'] =  text
+    with st.spinner("Generating"):
+        request = {"model":"gpt-3.5-turbo", "messages": messages, "temperature":0}
+        url = st.secrets['endpoint'] + "/gpt"
+        response = requests.post(url, json=request).json()
+
+    try:
+        end_time = time()
+        elapsed_time = end_time-start_time
+        result = json.loads(response['choices'][0]['message']['content'])
+        st.write(result)
+
+        usage = response['usage']
+        in_tokens = usage['prompt_tokens']
+        out_tokens = usage['completion_tokens']
+        estimate = (in_tokens / 1000) * 0.0005 + (out_tokens / 1000) * 0.0015
 
 
-    if st.button("Generate"):
-        with st.spinner("Generating"):
-            start_time = time()
-            request = {"model":"gpt-3.5-turbo", "messages": messages, "temperature":0}
-            url = st.secrets['endpoint'] + "/gpt"
-            response = requests.post(url, json=request).json()
+        result['metadata'] = {"link": link, "time": elapsed_time, "cost": estimate}
+        print(result)
 
-        try:
-            end_time = time()
-            elapsed_time = end_time-start_time
-            st.write(json.loads(response['choices'][0]['message']['content']))
-
-            usage = response['usage']
-            in_tokens = usage['prompt_tokens']
-            out_tokens = usage['completion_tokens']
-            estimate = (in_tokens / 1000) * 0.0005 + (out_tokens / 1000) * 0.0015
-
-            with st.expander("Stats"):
-                st.write(f"Total Tokens: {in_tokens+out_tokens}")
-                st.write(f"Estimated Cost: {estimate}")
-                st.write(f"Time Elapsed: {elapsed_time:.2f} seconds")
-
-        except:
-            st.error(response)
+        collection.insert_one(result)
+        st.success("Uploaded to DB")
+        
+    except:
+        st.error(response)

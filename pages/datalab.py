@@ -22,7 +22,7 @@ system_prompt = f"{prompt}\n\n{str(schema)}"
 messages = [{"role": "system", "content": system_prompt},
             {"role": 'user', "content":""}]
 
-link = st.text_input(label="Link:", value="")
+link = st.text_input(label="Site:", value="")
 
 #+value checking for links
 if link != '':
@@ -39,7 +39,6 @@ if link != '':
         end_time = time()
         elapsed_time = end_time-start_time
         result = json.loads(response['choices'][0]['message']['content'])
-        st.write(result)
 
         usage = response['usage']
         in_tokens = usage['prompt_tokens']

@@ -1,24 +1,22 @@
 import streamlit as st
 
 st.set_page_config(page_title="Auto CTI",)
-
-tags = []
+st.title("Dashboard")
 
 from pymongo import MongoClient
 client = MongoClient(st.secrets['uri'])
 db = client['test']
 collection = db['cti-blob']
 
-result = list(collection.find({}))
-for entry in result:
-    try:
-        for tag in entry['tags']:
-            if tag not in tags:
-                tags.append(tag)
-    except:
-        print(entry['_id'])
+count = collection.count_documents({})
+tags = collection.distinct('tags')
+vuln = collection.distinct('vulnerabilities')
 
-tags.sort()
+col1, col2, col3 = st.columns(3)
+col1.metric("Alerts", count, "")
+col2.metric("Tags", len(tags), "")
+col3.metric("CVEs", len(vuln), "")
+
 
 tag_select = st.multiselect("Tags", tags)
 result = list(collection.find({"tags": {"$in": tag_select}}))

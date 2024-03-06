@@ -1,12 +1,16 @@
 import streamlit as st
-
-st.set_page_config(page_title="Auto CTI",)
-st.title("Dashboard")
-
+import login
 from pymongo import MongoClient
 client = MongoClient(st.secrets['uri'])
 db = client['test']
 collection = db['cti-blob']
+
+auth = db['auth']
+
+st.set_page_config(page_title="Auto CTI",)
+st.title("Dashboard")
+
+login.sidebar()
 
 count = collection.count_documents({})
 tags = collection.distinct('tags')

@@ -2,6 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "title": {
+        "type": "string",
+        "maxLength": 30
+    },
     "threat_actors": {
         "type": "array",
         "items": {
@@ -54,15 +58,24 @@
     },
     "tags": {
         "type": "array",
+        "uniqueItems": true,
         "items": {
-        "type": "string"
+          "type": "string",
+          "enum": [
+            "Linux",
+            "Mac",
+            "Windows",
+            "AWS",
+            "GCP",
+            "Azure"
+          ]
         }
-    },
+      },
     "summary": {
         "type": "string",
         "maxLength": 360
     }
   },
-  "required": ["actionable_steps", "summary"],
+  "required": ["title", "tags", "summary"],
   "additionalProperties": false
 }

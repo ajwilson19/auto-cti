@@ -1,29 +1,44 @@
 import streamlit as st
 import login
-from pymongo import MongoClient
-client = MongoClient(st.secrets['uri'])
-db = client['test']
-collection = db['cti-blob']
+import mongo
 
-auth = db['auth']
+if 'db' not in st.session_state:
+    mongo.db_init()
+
+collection = st.session_state['db']['cti-blob']
+auth = st.session_state['db']['auth']
 
 st.set_page_config(page_title="Auto CTI",)
 st.title("Dashboard")
 
 login.sidebar()
 
-count = collection.count_documents({})
-tags = collection.distinct('tags')
-vuln = collection.distinct('vulnerabilities')
+if st.session_state['user'] != None:
+    user_config = st.session_state['db']['config'].find_one({"user": st.session_state['user']})
+    if not user_config:
+        st.warning("Create User Config in Profile Page")
+    else:
+        user_config = user_config["config"]
+        alerts = list(collection.find({"tags": {"$in": user_config}}))
 
-col1, col2, col3 = st.columns(3)
-col1.metric("Alerts", count, "")
-col2.metric("Tags", len(tags), "")
-col3.metric("CVEs", len(vuln), "")
+        count = collection.count_documents({})
+        #tags = collection.distinct('tags')
+        vuln = collection.distinct('vulnerabilities')
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Flagged Alerts", len(alerts), "")
+        col2.metric("Total Alerts", count, "")
+        col3.metric("CVEs", len(vuln), "")
 
 
-tag_select = st.multiselect("Tags", tags)
-result = list(collection.find({"tags": {"$in": tag_select}}))
-for entry in result:
-    with st.expander(str(entry["_id"])):
-        st.json(entry)
+
+        for entry in alerts:
+            with st.expander(entry["title"]):
+                st.write(entry['summary'])
+                st.write(entry['actionable_steps'])
+                st.link_button("Link", url=entry['metadata']['link'])
+else:
+    st.warning("Please Login or Create an Account")
+
+
+

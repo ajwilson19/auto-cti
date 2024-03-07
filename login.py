@@ -1,11 +1,14 @@
 import streamlit as st
-from pymongo import MongoClient
 import bcrypt
+from pymongo import MongoClient
 
-def sidebar():
+def db_init():
     client = MongoClient(st.secrets['uri'])
     db = client['test']
-    auth = db['auth']
+    st.session_state['db'] = db
+
+def sidebar():
+    auth = st.session_state['db']['auth']
 
     # Login
     with st.sidebar:
@@ -30,5 +33,3 @@ def sidebar():
             if st.button("Logout"):
                 st.session_state['user'] = None
                 st.rerun()
-
-    return auth

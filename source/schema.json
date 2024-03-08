@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+        "type": "string",
+        "maxLength": 30
+    },
+    "threat_actors": {
+        "type": "array",
+        "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+            "type": "string"
+            },
+            "aliases": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+            },
+            "country": {
+            "type": "string"
+            }
+        },
+        "required": ["name", "aliases", "country"],
+        "additionalProperties": false
+        }
+    },
+    "malware": {
+        "type": "array",
+        "items": {
+        "type": "string"
+        }
+    },
+    "vulnerabilities": {
+        "type": "array",
+        "items": {
+        "type": "object",
+        "properties": {
+            "cve_id": {
+            "type": "string"
+            },
+            "description": {
+            "type": "string"
+            }
+        },
+        "required": ["cve_id", "description"],
+        "additionalProperties": false
+        }
+    },
+    "actionable_steps": {
+        "type": "array",
+        "items": {
+        "type": "string"
+        }
+    },
+    "tags": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": [
+            "Linux",
+            "Mac",
+            "Windows",
+            "AWS",
+            "GCP",
+            "Azure"
+          ]
+        }
+      },
+    "summary": {
+        "type": "string",
+        "maxLength": 360
+    }
+  },
+  "required": ["title", "tags", "summary"],
+  "additionalProperties": false
+}

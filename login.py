@@ -17,7 +17,7 @@ def sidebar():
 
         if st.session_state['user'] == None:
             username = st.text_input("Username:")
-            password = st.text_input("Password:")
+            password = st.text_input("Password:", type="password")
             if st.button("Login"):
                 user = auth.find_one({"user": username})
                 if user:

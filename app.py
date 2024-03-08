@@ -8,7 +8,7 @@ if 'db' not in st.session_state:
 collection = st.session_state['db']['cti-blob']
 auth = st.session_state['db']['auth']
 
-st.set_page_config(page_title="Auto CTI",)
+st.set_page_config(page_title="Auto CTI", initial_sidebar_state="expanded")
 st.title("Dashboard")
 
 login.sidebar()

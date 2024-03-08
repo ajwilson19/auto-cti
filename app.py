@@ -19,7 +19,7 @@ if st.session_state['user'] != None:
         st.warning("Create User Config in Profile Page")
     else:
         user_config = user_config["config"]
-        alerts = list(collection.find({"tags": {"$in": user_config}}))
+        alerts = list(collection.find({"tags": {"$in": user_config}})) # reverse w/[::-1]
 
         count = collection.count_documents({})
         #tags = collection.distinct('tags')
@@ -35,7 +35,8 @@ if st.session_state['user'] != None:
         for entry in alerts:
             with st.expander(entry["title"]):
                 st.write(entry['summary'])
-                st.write(entry['actionable_steps'])
+                bullet_list = "\n".join([f"* {item}" for item in entry["actionable_steps"]])
+                st.markdown(bullet_list)
                 st.link_button("Link", url=entry['metadata']['link'])
 else:
     st.warning("Please Login or Create an Account")

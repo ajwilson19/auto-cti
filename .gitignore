@@ -2,3 +2,4 @@ secrets.toml
 .DS_Store
 build.sh
 misc/
+test.py

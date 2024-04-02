@@ -1,6 +1,6 @@
 import re
 from urllib.request import urlopen
-import cisa_config as config
+import palo_alto_config as config
 
 def scrape_link(link):
     page = url_open(link)

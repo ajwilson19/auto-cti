@@ -4,7 +4,7 @@ import cisa_config as config
 
 def scrape_link(link):
     page = url_open(link)
-    read_page(page)
+    return read_page(page)
 
 def scrape_title(link):
     parsed = link.split("/")
@@ -30,9 +30,12 @@ def read_page(page):
             articles_left = False
         html = html[eidx:]
     count = 1
+    formatted = []
     for article in articles:
-        print("Article", count, scrape_article(format_article_string(article)))
+        format_link = format_article_string(article)
+        formatted.append([config.TYPE + " Article " + count, scrape_article(format_link),format_link])
         count += 1
+    return formatted
 
 def read_article(article):
     html = article.read().decode("utf-8")
@@ -70,5 +73,5 @@ def format_article_string(article_string):
     eidx = article_string.find(config.LINK_STRIP_END)
     return config.LINK_PREPEND + article_string[sidx:eidx]
 
-scrape_link("https://www.cisa.gov/news-events/cybersecurity-advisories")
+#scrape_link("https://www.cisa.gov/news-events/cybersecurity-advisories")
 #scrape_link("https://unit42.paloaltonetworks.com/category/threat-briefs-assessments/")

@@ -2,6 +2,7 @@ from chalice import Chalice
 import os
 from openai import OpenAI
 import json
+import Engine
 
 app = Chalice(app_name='helloworld')
 openai_api_key = os.environ.get('OPENAI_API_KEY')
@@ -27,5 +28,13 @@ def gpt():
         return json.dumps(json.loads(response.model_dump_json()), indent=4)
     except Exception as e:
         return {'success': False, 'error': str(e)}
+
+@app.schedule(app.Cron("0", "*", "*", "*", "*"))
+def gather():
+    articles = Engine.run()
+    #articles in form [articlenum,article,article link]
+    # check if link exists in db
+    # if not, run /gpt on the article
+    # if yes, ignore
 
 

@@ -1,3 +1,4 @@
+TYPE="CISA"
 ARTICLE_START="<div  class=\"c-view__row\">"
 ARTICLE_END="</article>"
 LINK_START="<a href=\""

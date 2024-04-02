@@ -1,3 +1,4 @@
+TYPE="PaloAlto"
 ARTICLE_START="<article"
 ARTICLE_END="</article>"
 LINK_START="<h3 class=\"h5 news__title mb-15\">"

@@ -1,5 +1,6 @@
 import re
 from urllib.request import urlopen
+import cisa_config as config
 
 def scrape_link(link):
     page = url_open(link)
@@ -20,11 +21,11 @@ def read_page(page):
     articles_left = True
     articles = []
     while articles_left:
-        sidx = html.find("<article")
-        eidx = html.find("</article>") + len("</article>")
+        sidx = html.find(config.ARTICLE_START)
+        eidx = html.find(config.ARTICLE_END) + len(config.ARTICLE_END)
         article = html[sidx:eidx]
         if article != "":
-            articles.append(article[article.find("<h3 class=\"h5 news__title mb-15\">"):article.find("</h3>")])
+            articles.append(article[article.find(config.LINK_START):article.find(config.LINK_END)])
         else:
             articles_left = False
         html = html[eidx:]
@@ -35,15 +36,13 @@ def read_page(page):
 
 def read_article(article):
     html = article.read().decode("utf-8")
-    html = html[html.find("<div class=\"article__content"):html.find("</article>") + len("</article>")]
-    #print(html)
+    html = html[html.find(config.CONTENT_START):html.find(config.CONTENT_END) + len(config.CONTENT_END)]
     p_left = True
-    #print(html)
     paragraphs = []
-    html = html[html.find("<p>"):]
+    html = html[html.find(config.CONTENT_START):]
     while p_left:
-        sidx = html.find("<p>")
-        eidx = html.find("</p>") + len("</p>")
+        sidx = html.find(config.CONTENT_START)
+        eidx = html.find(config.CONTENT_END) + len(config.CONTENT_END)
         paragraph = html[sidx:eidx]
         if paragraph == "":
             p_left = False
@@ -56,8 +55,8 @@ def read_article(article):
     return full_article
 
 def remove_html(paragraph):
-  new_paragraph = re.sub(re.compile('<.*?>'), '', paragraph)
-  return new_paragraph
+    new_paragraph = re.sub(re.compile('<.*?>'), '', paragraph)
+    return new_paragraph
 
 def scrape_article(article_link):
     article = url_open(article_link)
@@ -67,8 +66,9 @@ def format_return(filename, link):
     return "Scraped webpage at " + link + " saved at " + filename
 
 def format_article_string(article_string):
-    sidx = article_string.find("<h3 class=\"h5 news__title mb-15\"><a href=\"") + len("<h3 class=\"h5 news__title mb-15\"><a href=\"")
-    eidx = article_string.find("\" data-page-track=")
-    return article_string[sidx:eidx]
+    sidx = article_string.find(config.LINK_STRIP_START) + len(config.LINK_STRIP_START)
+    eidx = article_string.find(config.LINK_STRIP_END)
+    return config.LINK_PREPEND + article_string[sidx:eidx]
 
+scrape_link("https://www.cisa.gov/news-events/cybersecurity-advisories")
 #scrape_link("https://unit42.paloaltonetworks.com/category/threat-briefs-assessments/")

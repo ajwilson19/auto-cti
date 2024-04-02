@@ -1,8 +1,12 @@
 import re
 from urllib.request import urlopen
-import palo_alto_config as config
+import gen_config as config
 
 def scrape_link(link):
+    if link.__contains__("cisa"):
+        config.switch_cisa()
+    elif link.__contains__("paloaltonetworks"):
+        config.switch_palo_alto()
     page = url_open(link)
     return read_page(page)
 

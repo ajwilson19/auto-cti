@@ -62,12 +62,29 @@
         "items": {
           "type": "string",
           "enum": [
+            "Finance",
+            "Government",
+            "Healthcare",
+            "Energy",
+            "IT",
+            "Manufacturing",
+            "Transportation",
+            "Retail",
+            "Education",
+            "Defense",
+            "Aerospace",
+            "Media",
+            "Entertainment",
+            "Legal",
+            "Real Estate",
+            
             "Linux",
             "Mac",
             "Windows",
             "AWS",
             "GCP",
             "Azure"
+
           ]
         }
       },

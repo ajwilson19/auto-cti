@@ -66,9 +66,9 @@ def remove_html(paragraph):
     return new_paragraph
 
 def scrape_article(article_link):
-    if link.__contains__("cisa"):
+    if article_link.__contains__("cisa"):
         config.switch_cisa()
-    elif link.__contains__("paloaltonetworks"):
+    elif article_link.__contains__("paloaltonetworks"):
         config.switch_palo_alto()
     article = url_open(article_link)
     return read_article(article)

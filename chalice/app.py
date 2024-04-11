@@ -1,16 +1,21 @@
 from chalice import Chalice
 import os
 from openai import OpenAI
+from pymongo import MongoClient
 import json
-import Engine
 
-app = Chalice(app_name='helloworld')
+app = Chalice(app_name='auto-cti')
 openai_api_key = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key)
 
+mongo_uri = os.environ.get('MONGO')
+mongo = MongoClient(mongo_uri)
+db = mongo['test']
+
 @app.route('/', methods=['GET'])
 def index():
-    return {'hello':'world'}
+    count = db['api'].find_one()['count']
+    return {'count':count}
 
 @app.route('/gpt', methods=['POST'])
 def gpt():
@@ -29,9 +34,10 @@ def gpt():
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
-@app.schedule(app.Cron("0", "*", "*", "*", "*"))
-def gather():
-    articles = Engine.run()
+@app.schedule('rate(1 minute)')
+def gather(event):
+    db['api'].update_one({}, {'$inc': {'count': 1}}, upsert=True)
+    #articles = Engine.run()
     #articles in form [articlenum,article,article link]
     # check if link exists in db
     # if not, run /gpt on the article

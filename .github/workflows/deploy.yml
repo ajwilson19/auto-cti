@@ -1,0 +1,27 @@
+name: Chalice Deploy
+on:
+  push:
+    branches:
+      - chalice-deploy
+
+jobs:
+  Deploy:
+    runs-on: self-hosted
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout repo code
+        uses: actions/checkout@v4
+
+      - name:
+        run: |
+          ls
+
+      # - name: Copy file via ssh key
+      #     uses: appleboy/scp-action@v0.1.7
+      #     with:
+      #       host: ${{ secrets.HOST  }}
+      #       username: ${{ secrets.USERNAME  }}
+      #       key: ${{  secrets.KEY }}
+      #       source: artifacts/counter-v2.0.0.deb
+      #       target: /home/awilson22

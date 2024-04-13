@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.HOST  }}
           username: ${{ secrets.USERNAME  }}
+          password: ${{ secrets.PASSWORD  }}
           key: ${{  secrets.KEY }}
           source: ./chalice
           target: /home/cti
-          timeout: 59s

@@ -1,6 +1,6 @@
 import re
 from urllib.request import urlopen
-import gen_config as config
+import web.gen_config as config
 
 def scrape_link(link):
     if link.__contains__("cisa"):

@@ -1,6 +1,6 @@
 # heart of the program to run the webscraping
 
-import WebScrape
+import web.WebScrape as WebScrape
 
 def run():
     all_articles=[]

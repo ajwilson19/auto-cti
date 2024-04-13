@@ -20,5 +20,5 @@ jobs:
           username: ${{ secrets.USERNAME  }}
           password: ${{ secrets.PASSWORD  }}
           key: ${{  secrets.KEY }}
-          source: ./chalice
-          target: /home/cti
+          source: chalice/*
+          target: /home/cti/deploy

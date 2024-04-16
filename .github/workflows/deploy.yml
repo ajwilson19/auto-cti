@@ -2,11 +2,11 @@ name: Chalice Deploy
 on:
   push:
     branches:
-      - chalice-deploy
+      - chalice-deploy #main
 
 jobs:
   Deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest #oriole
     timeout-minutes: 3
 
     steps:
@@ -21,3 +21,17 @@ jobs:
           key: ${{  secrets.KEY }}
           source: ./chalice/*
           target: ~/deploy
+
+      - name: Install w/ ssh
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cp ~/deploy/chalice/app.py ~/auto-cti/app.py
+            cp ~/deploy/chalice/requirements.txt ~/auto-cti/requirements.txt
+            source ~/api/bin/activate
+            cd auto-cti
+            pip install -r requirements.txt
+            chalice deploy &> /dev/null

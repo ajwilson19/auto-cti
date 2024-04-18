@@ -7,8 +7,9 @@ def scrape_link(link):
         config.switch_cisa()
     elif link.__contains__("paloaltonetworks"):
         config.switch_palo_alto()
-    page = url_open(link)
-    return read_page(page)
+    page = urlopen(link)
+    articles = get_article_links(page) #ARTICLE LINKS!!!!
+    return get_formatted(articles)
 
 def scrape_title(link):
     parsed = link.split("/")
@@ -16,11 +17,7 @@ def scrape_title(link):
         return parsed[-2]
     return parsed[-1]
 
-def url_open(link):
-    page = urlopen(link)
-    return page
-
-def read_page(page):
+def get_article_links(page):
     html = page.read().decode("utf-8")
     articles_left = True
     articles = []
@@ -33,12 +30,15 @@ def read_page(page):
         else:
             articles_left = False
         html = html[eidx:]
-    count = 1
-    formatted = []
+    links = []
     for article in articles:
-        format_link = format_article_string(article)
-        formatted.append([config.TYPE + " Article " + count, scrape_article(format_link),format_link])
-        count += 1
+        links.append(format_article_string(article))
+    return links
+
+def get_formatted(links):
+    formatted = []
+    for link in links:
+        formatted.append([link, scrape_article(link)])
     return formatted
 
 def read_article(article):
@@ -70,16 +70,10 @@ def scrape_article(article_link):
         config.switch_cisa()
     elif article_link.__contains__("paloaltonetworks"):
         config.switch_palo_alto()
-    article = url_open(article_link)
+    article = urlopen(article_link)
     return read_article(article)
-
-def format_return(filename, link):
-    return "Scraped webpage at " + link + " saved at " + filename
 
 def format_article_string(article_string):
     sidx = article_string.find(config.LINK_STRIP_START) + len(config.LINK_STRIP_START)
     eidx = article_string.find(config.LINK_STRIP_END)
     return config.LINK_PREPEND + article_string[sidx:eidx]
-
-#scrape_link("https://www.cisa.gov/news-events/cybersecurity-advisories")
-#scrape_link("https://unit42.paloaltonetworks.com/category/threat-briefs-assessments/")

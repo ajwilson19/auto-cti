@@ -12,11 +12,8 @@ def run():
     return all_articles
 
 def read_links():
-    file = open("cti-links.txt")
-    links = []
-    for row in file:
-        links.append(row[:-1])
-    return links
+    links = open("cti-links.txt").readlines()
+    return [link.replace("\n", "") for link in links]
 
 
 def scrape(link):

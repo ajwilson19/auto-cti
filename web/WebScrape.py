@@ -9,7 +9,7 @@ def scrape_link(link):
         config.switch_palo_alto()
     page = urlopen(link)
     articles = get_article_links(page) #ARTICLE LINKS!!!!
-    return get_formatted(articles)
+    return articles
 
 def scrape_title(link):
     parsed = link.split("/")

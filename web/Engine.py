@@ -3,36 +3,44 @@ from pymongo import MongoClient
 import web.WebScrape as WebScrape
 import json
 from openai import OpenAI
+import os
 
-# env vars
-mongo_uri = ""
-openai_key = ""
+openai_key = os.environ.get('OPENAI_API_KEY')
+mongo_uri = os.environ.get('MONGO')
 
 def run():
+    mongo = MongoClient(mongo_uri)
+
     new_articles=[]
     sources = read_links()
-    
+
     for link in sources:
-        for article in WebScrape.scrape_link(link): 
+        for article in WebScrape.scrape_link(link):
             
-            if is_new(article):
+            if is_new(mongo, article):
                 print(article)
                 new_articles.append(article)
     
-    status = upload(new_articles)
+    status = upload(mongo, new_articles)
+    if status['status']:
+        print(status['count'])
+    else:
+        print(status['error'])
+
 
 
 def read_links():
     links = open("cti-links.txt").readlines()
     return [link.replace("\n", "") for link in links]
 
-def is_new(link):
-    mongo = MongoClient(mongo_uri)
+def is_new(mongo, link):
     db = mongo['test']['cti-blob']
     return not db.find_one({"metadata.link": link})
 
     
-def upload(links):
+def upload(mongo, links):
+    count = 0
+
     client = OpenAI(api_key=openai_key)
 
     prompt = open("web/source/system_prompt.txt", 'r').read()
@@ -60,10 +68,12 @@ def upload(links):
             metadata = {"link": link, "cost": estimate}
             output["metadata"] = metadata
 
-            #output = doc to upload, return {'status': True, id:id}
-
-            return output
+            db = mongo['test']['cti-blob']
+            db.insert_one(output)
+            count += 1
             
         except Exception as e:
             return {'status': False, 'error': str(e)}
+    
+    return {'status': True, 'count': count}
         

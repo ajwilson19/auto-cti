@@ -1,15 +1,20 @@
 import re
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 import web.gen_config as config
 
 def scrape_link(link):
-    if link.__contains__("cisa"):
-        config.switch_cisa()
-    elif link.__contains__("paloaltonetworks"):
-        config.switch_palo_alto()
-    page = urlopen(link)
+    switch(link)
+    page = url_open(link)
     articles = get_article_links(page) #ARTICLE LINKS!!!!
     return articles
+
+def url_open(link):
+    req = Request(
+        url=link,
+        headers={'User-Agent': 'Mozilla/5.0'}
+    )
+    page = urlopen(req)
+    return page
 
 def scrape_title(link):
     parsed = link.split("/")
@@ -21,6 +26,7 @@ def get_article_links(page):
     html = page.read().decode("utf-8")
     articles_left = True
     articles = []
+    html = html[html.find(config.SPLICE):]
     while articles_left:
         sidx = html.find(config.ARTICLE_START)
         eidx = html.find(config.ARTICLE_END) + len(config.ARTICLE_END)
@@ -32,8 +38,16 @@ def get_article_links(page):
         html = html[eidx:]
     links = []
     for article in articles:
-        links.append(format_article_string(article))
+        link = check_ignore(format_article_string(article))
+        if link is not None:
+            links.append(link)
     return links
+
+def check_ignore(link):
+    if config.IGNORE != "":
+        if link.__contains__(config.IGNORE):
+            return None
+    return link
 
 def get_formatted(links):
     formatted = []
@@ -48,12 +62,12 @@ def read_article(article):
     paragraphs = []
     html = html[html.find(config.CONTENT_START):]
     while p_left:
-        sidx = html.find(config.CONTENT_START)
-        eidx = html.find(config.CONTENT_END) + len(config.CONTENT_END)
+        sidx = html.find(config.PARAGRAPH_START)
+        eidx = html.find(config.PARAGRAPH_END)
         paragraph = html[sidx:eidx]
         if paragraph == "":
             p_left = False
-        html = html[eidx:]
+        html = html[eidx + len(config.PARAGRAPH_END):]
         paragraphs.append(paragraph)
 
     full_article = ""
@@ -66,14 +80,30 @@ def remove_html(paragraph):
     return new_paragraph
 
 def scrape_article(article_link):
-    if article_link.__contains__("cisa"):
-        config.switch_cisa()
-    elif article_link.__contains__("paloaltonetworks"):
-        config.switch_palo_alto()
-    article = urlopen(article_link)
+    switch(article_link)
+    article = url_open(article_link)
     return read_article(article)
+
+def switch(link):
+    if link.__contains__("cisa"):
+        config.switch_cisa()
+    elif link.__contains__("paloaltonetworks"):
+        config.switch_palo_alto()
+    elif link.__contains__("bleeping"):
+        config.switch_bleeping_computer()
+    elif link.__contains__("talosintel"):
+        config.switch_bleeping_computer()
+    elif link.__contains__("thehackernews"):
+        config.switch_hacker_news()
 
 def format_article_string(article_string):
     sidx = article_string.find(config.LINK_STRIP_START) + len(config.LINK_STRIP_START)
     eidx = article_string.find(config.LINK_STRIP_END)
-    return config.LINK_PREPEND + article_string[sidx:eidx]
+    return format_link(config.LINK_PREPEND + article_string[sidx:eidx])
+
+def format_link(link):
+    if link.__contains__("\""):
+        return link.strip("\"")
+    elif link.__contains__("\'"):
+        return link.strip("\'")
+    return link

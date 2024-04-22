@@ -4,3 +4,4 @@ build.sh
 misc/
 test.py
 2_datalab.py
+.chalice

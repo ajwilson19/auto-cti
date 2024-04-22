@@ -18,19 +18,33 @@ def run():
         for article in WebScrape.scrape_link(link):
             
             if is_new(mongo, article):
-                print(article)
                 new_articles.append(article)
-    
-    status = upload(mongo, new_articles)
+                
+    if len(new_articles) > 0:
+        status = upload(mongo, new_articles)
+    else:
+        status = {'status': True, 'count': 0}
+
     if status['status']:
-        print(status['count'])
+        db = mongo['test']['api']
+        activity = list(db.find_one({})['count'])
+        activity.pop(0)
+        activity.append(int(status['count']))
+        db.update_one(
+            {"activity": "list"},
+            { "$pop": { "count": -1 } })
+        db.update_one(
+            {"activity": "list"},
+            { "$push": { "count": status['count'] } }
+            )
+
     else:
         print(status['error'])
 
 
 
 def read_links():
-    links = open("cti-links.txt").readlines()
+    links = open("web/cti-links.txt").readlines()
     return [link.replace("\n", "") for link in links]
 
 def is_new(mongo, link):

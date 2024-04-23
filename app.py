@@ -39,6 +39,7 @@ if 'db' not in st.session_state:
 
 collection = st.session_state['db']['cti-blob']
 auth = st.session_state['db']['auth']
+api = st.session_state['db']['api']
 
 st.set_page_config(page_title="Auto CTI", initial_sidebar_state="expanded")
 st.title("Dashboard")
@@ -51,16 +52,17 @@ if st.session_state['user'] != None:
         st.warning("Create User Config in Profile Page")
     else:
         user_config = user_config["config"]
-        alerts = list(collection.find({"tags": {"$in": user_config}})) # reverse w/[::-1]
+        alerts = list(collection.find({"tags": {"$in": user_config}}))[::-1]
 
         count = collection.count_documents({})
         #tags = collection.distinct('tags')
-        vuln = collection.distinct('vulnerabilities')
+        # vuln = collection.distinct('vulnerabilities')
+        new = sum(api.find_one({"activity": "list"})['count'])
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Flagged Alerts", len(alerts), "")
         col2.metric("Total Alerts", count, "")
-        col3.metric("CVEs", len(vuln), "")
+        col3.metric("New in last 12hr", new, "")
 
 
 

@@ -1,6 +1,6 @@
 import re
 from urllib.request import Request, urlopen
-import web.gen_config as config
+from chalicelib import gen_config as config
 
 def scrape_link(link):
     switch(link)

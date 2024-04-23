@@ -1,9 +1,10 @@
 # heart of the program to run the webscraping
 from pymongo import MongoClient
-import web.WebScrape as WebScrape
+from chalicelib import WebScrape
 import json
 from openai import OpenAI
 import os
+from chalicelib import links, prompt
 
 openai_key = os.environ.get('OPENAI_API_KEY')
 mongo_uri = os.environ.get('MONGO')
@@ -18,19 +19,30 @@ def run():
         for article in WebScrape.scrape_link(link):
             
             if is_new(mongo, article):
-                print(article)
                 new_articles.append(article)
-    
-    status = upload(mongo, new_articles)
+                
+    if len(new_articles) > 0:
+        status = upload(mongo, new_articles)
+    else:
+        status = {'status': True, 'count': 0}
+
     if status['status']:
-        print(status['count'])
+        db = mongo['test']['api']
+        db.update_one(
+            {"activity": "list"},
+            { "$pop": { "count": -1 } })
+        db.update_one(
+            {"activity": "list"},
+            { "$push": { "count": status['count'] } }
+            )
+
     else:
         print(status['error'])
 
 
 
 def read_links():
-    links = open("cti-links.txt").readlines()
+    #links = open("cti-links.txt").readlines()
     return [link.replace("\n", "") for link in links]
 
 def is_new(mongo, link):
@@ -43,8 +55,8 @@ def upload(mongo, links):
 
     client = OpenAI(api_key=openai_key)
 
-    prompt = open("web/source/system_prompt.txt", 'r').read()
-    schema = json.load(open("web/source/schema.json", 'r'))
+    #prompt = open("chalicelib/system_prompt.txt", 'r').read()
+    schema = json.load(open("chalicelib/schema.json", 'r'))
     system_prompt = f"{prompt}\n\n{str(schema)}"
 
     payload = WebScrape.get_formatted(links)

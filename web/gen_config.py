@@ -11,7 +11,7 @@ CONTENT_START=""
 CONTENT_END=""
 PARAGRAPH_START=""
 PARAGRAPH_END=""
-IGNORE=""
+IGNORE=None
 
 
 def switch_cisa():
@@ -64,7 +64,7 @@ def switch_bleeping_computer():
     CONTENT_END = "<div class=\"cz-related-article-wrapp"
     PARAGRAPH_START = "<p"
     PARAGRAPH_END = "</p>"
-    IGNORE = "/deals/"
+    IGNORE = ["/deals/","rel=\"sponsored"]
 
 def switch_talos():
     global TYPE, ARTICLE_START, ARTICLE_END, LINK_START, LINK_END, LINK_PREPEND, LINK_STRIP_START, \
@@ -99,4 +99,4 @@ def switch_hacker_news():
     CONTENT_END = "</main>"
     PARAGRAPH_START = "<p"
     PARAGRAPH_END = "</p>"
-    IGNORE = "https://thehackernews.uk"
+    IGNORE = ["https://thehackernews.uk"]

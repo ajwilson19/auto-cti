@@ -44,9 +44,10 @@ def get_article_links(page):
     return links
 
 def check_ignore(link):
-    if config.IGNORE != "":
-        if link.__contains__(config.IGNORE):
-            return None
+    if config.IGNORE is not None:
+        for IGNORE in config.IGNORE:
+            if link.__contains__(IGNORE):
+                return None
     return link
 
 def get_formatted(links):

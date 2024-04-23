@@ -5,6 +5,7 @@ import json
 from openai import OpenAI
 import os
 from chalicelib import links, prompt
+import datetime
 
 openai_key = os.environ.get('OPENAI_API_KEY')
 mongo_uri = os.environ.get('MONGO')
@@ -42,7 +43,6 @@ def run():
 
 
 def read_links():
-    #links = open("cti-links.txt").readlines()
     return [link.replace("\n", "") for link in links]
 
 def is_new(mongo, link):
@@ -55,7 +55,6 @@ def upload(mongo, links):
 
     client = OpenAI(api_key=openai_key)
 
-    #prompt = open("chalicelib/system_prompt.txt", 'r').read()
     schema = json.load(open("chalicelib/schema.json", 'r'))
     system_prompt = f"{prompt}\n\n{str(schema)}"
 
@@ -87,5 +86,5 @@ def upload(mongo, links):
         except Exception as e:
             return {'status': False, 'error': str(e)}
     
-    return {'status': True, 'count': count}
+    return {'status': True, 'count': count, 'time': datetime.datetime.now()}
         

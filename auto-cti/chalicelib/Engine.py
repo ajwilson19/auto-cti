@@ -40,16 +40,13 @@ def run():
     else:
         print(status['error'])
 
-
-
 def read_links():
     return [link.replace("\n", "") for link in links]
 
 def is_new(mongo, link):
     db = mongo['test']['cti-blob']
     return not db.find_one({"metadata.link": link})
-
-    
+ 
 def upload(mongo, links):
     count = 0
 
@@ -67,7 +64,7 @@ def upload(mongo, links):
                 {"role": 'user', "content":text}]
         
         try:
-            
+  
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=messages,
@@ -76,7 +73,7 @@ def upload(mongo, links):
 
             output = json.loads(response.choices[0].message.content)
             estimate = (response.usage.prompt_tokens / 1000) * 0.0005 + (response.usage.completion_tokens / 1000) * 0.0015
-            metadata = {"link": link, "cost": estimate}
+            metadata = {"link": link, "cost": estimate, 'time': datetime.datetime.now()}
             output["metadata"] = metadata
 
             db = mongo['test']['cti-blob']
@@ -86,5 +83,5 @@ def upload(mongo, links):
         except Exception as e:
             return {'status': False, 'error': str(e)}
     
-    return {'status': True, 'count': count, 'time': datetime.datetime.now()}
+    return {'status': True, 'count': count}
         

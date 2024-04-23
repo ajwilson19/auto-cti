@@ -53,7 +53,10 @@ def check_ignore(link):
 def get_formatted(links):
     formatted = []
     for link in links:
-        formatted.append([link, scrape_article(link)])
+        try:
+            formatted.append([link, scrape_article(link)])
+        except:
+            pass
     return formatted
 
 def read_article(article):

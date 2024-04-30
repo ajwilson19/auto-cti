@@ -59,7 +59,7 @@ def upload(mongo, links):
     schema = json.load(open("chalicelib/schema.json", 'r'))
     system_prompt = f"{prompt}\n\n{str(schema)}"
 
-    payload = WebScrape.get_formatted(links)
+    payload = WebScrape.get_formatted_articles(links)
     for bundle in payload:
         link = bundle[0]
         text = bundle[1]

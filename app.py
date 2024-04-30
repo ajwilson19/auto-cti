@@ -1,6 +1,7 @@
 import streamlit as st
 import bcrypt
 from pymongo import MongoClient
+import datetime
 
 def db_init():
     client = MongoClient(st.secrets['uri'])
@@ -47,22 +48,37 @@ st.title("Dashboard")
 sidebar()
 
 if st.session_state['user'] != None:
-    user_config = st.session_state['db']['config'].find_one({"user": st.session_state['user']})
-    if not user_config:
+    user_config = st.session_state['db']['config'].find({"user": st.session_state['user']})
+    titles = [c["title"] for c in user_config]
+    if not len(titles):
         st.warning("Create User Config in Profile Page")
     else:
-        user_config = user_config["config"]
-        alerts = list(collection.find({"tags": {"$in": user_config}}))[::-1]
+        
+        config_title = st.selectbox("Profile", titles)
+        #gets list of tagged alerts in reverse order
+        user_config = st.session_state['db']['config'].find_one({"user": st.session_state['user'], "title": config_title})['config']
+        print(user_config)
+        query = {
+            "tags": {"$in": user_config},
+        }
+        # if st.toggle("Last 12 hrs"):
+        #     query["time"] =  {"$gte":(datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(hours=12)).strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
+
+        alerts = list(collection.find(query))[::-1]
 
         count = collection.count_documents({})
         #tags = collection.distinct('tags')
         # vuln = collection.distinct('vulnerabilities')
-        new = sum(api.find_one({"activity": "list"})['count'])
+        activity = api.find_one({"activity": "list"})['count']
+        new = sum(activity)
+
+        # with st.expander("Recent Activity"):
+        #     st.bar_chart(activity, use_container_width=True, height=200)
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Flagged Alerts", len(alerts), "")
         col2.metric("Total Alerts", count, "")
-        col3.metric("New in last 12hr", new, "")
+        col3.metric("New in last 12hr", new, delta=str(activity[-1])+" in the last hour")
 
 
 
@@ -74,6 +90,3 @@ if st.session_state['user'] != None:
                 st.link_button("Link", url=entry['metadata']['link'])
 else:
     st.warning("Please Login or Create an Account")
-
-
-

@@ -39,28 +39,36 @@ with st.sidebar:
 if st.session_state['user']:
     st.title(st.session_state['user'])
 
-    user_config = config.find_one({"user": st.session_state['user']})
-    if user_config:
-        st.write("Current Configuration")
-        st.write(user_config["config"])
+    user_config = config.find({"user": st.session_state['user']})
+    titles = [c["title"] for c in user_config]
+        
+    if len(titles):
+        config_title = st.selectbox("Current Configuration", titles)
+        config_doc = config.find_one({"user": st.session_state['user'], "title": config_title})
+        st.write(config_doc["config"])
         with st.expander("Edit Config"):
-            ut = config.find_one({"user": st.session_state['user']})["config"]
+            ut = config_doc["config"]
             uc = st.multiselect("Update Tags", collection.distinct('tags'), ut)
             if st.button("Update"):
-                id = config.find_one_and_replace({"user": st.session_state['user'], "config": ut}, {"user": st.session_state['user'], "config": uc})
+                id = config.find_one_and_replace({"user": st.session_state['user'], "title": config_title, "config": ut}, {"user": st.session_state['user'], "title": config_title, "config": uc})
                 if id:
                     st.success("Configuration updated")
                     time.sleep(2)
                     st.rerun()
-    else:
-        with st.expander("Create User Config"):
-            uc = st.multiselect("Select tags", collection.distinct('tags'))
-            if st.button("Save"):
-                id = config.insert_one({"user": st.session_state['user'], "config": uc})
+    
+    with st.expander("New User Config"):
+        title = st.text_input("Title")
+        tags = st.multiselect("Select tags", collection.distinct('tags'))
+        if st.button("Save"):
+            if title != "":
+                id = config.insert_one({"user": st.session_state['user'], "title":title, "config": tags})
                 if id:
-                    st.success("Configuration saved")
+                    st.success("Configuration created sucessfully")
                     time.sleep(2)
                     st.rerun()
+            else:
+                st.error("Title Required")
+
 else:
     st.warning("Login or create an account")
 

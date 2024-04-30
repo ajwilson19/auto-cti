@@ -89,7 +89,10 @@ def format_article_string(article_string):
 def get_formatted_article(links):
     formatted = []
     for link in links:
-        formatted.append([link, scrape_article(link)])
+        try:
+            formatted.append([link, scrape_article(link)])
+        except:
+            pass
     return formatted
 
 """

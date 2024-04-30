@@ -5,6 +5,8 @@
                 during runtime based on the links that are sent into the web scraper.
                 Configurations fit into the web scraper for different pieces to splice
                 the article at to get the unstructured article to a structured point
+* Notes:
+            4/30/24: This can probably be done better. Sorry - Dbog
 """
 
 TYPE=""
@@ -25,6 +27,7 @@ IGNORE=None
 """
     Switches the Config class global variables to the desired values based on 
         the input values. 
+        
     Input: Current link to be scraped 
     Output: No Output
 """
@@ -45,6 +48,7 @@ def switch(link) -> None:
 """
     Changes the current global variables of the file to be the correct parsing values
         for Web Scraping of CISA Web Pages
+        
     Input: No Function Input
     Output: No Function Output
 """
@@ -71,6 +75,7 @@ def switch_cisa() -> None:
 """
     Changes the current global variables of the file to be the correct parsing values
         for Web Scraping of Palo Alto Unit 42 Web Pages
+        
     Input: No Function Input
     Output: No Function Output
 """
@@ -96,6 +101,7 @@ def switch_palo_alto() -> None:
 """
     Changes the current global variables of the file to be the correct parsing values
         for Web Scraping of Bleeping Computer Web Pages
+        
     Input: No Function Input
     Output: No Function Output
 """
@@ -123,6 +129,7 @@ def switch_bleeping_computer() -> None:
 """
     Changes the current global variables of the file to be the correct parsing values
         for Web Scraping of Talos Intelligence Web Pages
+        
     Input: No Function Input
     Output: No Function Output
 """
@@ -149,6 +156,7 @@ def switch_talos() -> None:
 """
     Changes the current global variables of the file to be the correct parsing values
         for Web Scraping of HackerNews Web Pages
+        
     Input: No Function Input
     Output: No Function Output
 """

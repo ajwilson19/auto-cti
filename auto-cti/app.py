@@ -60,51 +60,54 @@ def userconfig():
     except Exception as e:
         return {"success": False, "error": e}
     
-# @app.route('/profiles', method=['POST'])
-# def profiles():
-#     request = app.current_request.json_body
-#     try:
-#         config = db['config']
-#         user_config = config.find({"user": request['username']})
-#         titles = [c["title"] for c in user_config]
-#         return {'success': True, 'titles': titles}
-#     except Exception as e:
-#         return {"success": False, "error": e}
+@app.route('/profiles', methods=['POST'])
+def profiles():
+    request = app.current_request.json_body
+    try:
+        config = db['config']
+        user_config = config.find({"user": request['username']})
+        titles = [c["title"] for c in user_config]
+        return {'success': True, 'titles': titles}
+    except Exception as e:
+        return {"success": False, "error": e}
     
-# @app.route('/tags', method=['POST'])
-# def tags():
-#     request = app.current_request.json_body
-#     try:
-#         config = db['config']
-#         tags = config.find_one({"user": request['username'], "title": request["title"]})['tags']
-#         return {'success': True, 'titles': tags}
-#     except Exception as e:
-#         return {"success": False, "error": e}
+@app.route('/tags', methods=['POST'])
+def tags():
+    request = app.current_request.json_body
+    try:
+        config = db['config']
+        tags = config.find_one({"user": request['username'], "title": request["title"]})['config']
+        return {'success': True, 'titles': tags}
+    except Exception as e:
+        return {"success": False, "error": e}
     
-# @app.route('/alerts', method=['POST'])
-# def alerts():
+# @app.route('/feed', methods=['GET'])
+# def feed():
 #     request = app.current_request.json_body
+    
 #     try:
-#         config = db['config']
-#         alerts = list(config.find({"tags": {"$in": request['tags']}}))[::-1]
+#         cti = db['cti-blob']
+#         query = {} #"tags": {"$in": request['tags']}
+#         projection = {"time": 0}
+#         alerts = list(cti.find(query, projection))
 #         return {'success': True, 'alerts': alerts}
 #     except Exception as e:
 #         return {"success": False, "error": e}  
     
-# @app.route('/stats', method=['GET'])
-# def stats():
-#     try:
-#         cti = db['cti-blob']
-#         api = db['api']
+@app.route('/stats', methods=['GET'])
+def stats():
+    try:
+        cti = db['cti-blob']
+        api = db['api']
 
-#         count = cti.count_documents({})
-#         activity = api.find_one({"activity": "list"})['count']
-#         last12 = sum(activity)
-#         last1 = activity[-1]
+        count = cti.count_documents({})
+        activity = api.find_one({"activity": "list"})['count']
+        last12 = sum(activity)
+        last1 = activity[-1]
 
-#         return {'success': True, 'count': count, 'last12': last12, 'last1': last1}
-#     except Exception as e:
-#         return {"success": False, "error": e} 
+        return {'success': True, 'count': count, 'last12': last12, 'last1': last1}
+    except Exception as e:
+        return {"success": False, "error": e} 
         
 
 @app.schedule('cron(0 * * * ? *)')

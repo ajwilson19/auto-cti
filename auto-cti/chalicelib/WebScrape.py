@@ -103,7 +103,7 @@ def get_formatted_articles(links) -> 'Formatted Article Link':
         try:
             formatted.append([link, scrape_article(link)])
         except:
-            pass
+            print("Error on Link:",link)
     return formatted
 
 """

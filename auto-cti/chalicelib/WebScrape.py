@@ -103,9 +103,11 @@ def format_article_string(article_string) -> 'Formatted Article Link':
 """
 
 """
-    Gets a list of all of the articles from a list of links from the main article hub     
-    Input: 
-    Output: 
+    Gets a list of all of the articles from a list of links from the main article hub and initializes a scrape
+        on them, then returns the full article string and the link it came from to a formatted list.
+        
+    Input: List of article links
+    Output: List of full parsed articles and their links
 """
 def get_formatted_articles(links) -> 'Formatted Article Link':
     formatted = []
@@ -117,9 +119,11 @@ def get_formatted_articles(links) -> 'Formatted Article Link':
     return formatted
 
 """
-    
-    Input:
-    Output:
+    Initializes a scrape on a single article link. Ensures that the configuration is set right, then utilizes url_open()
+        helper function. runs the raw html through the read_article() function and returns
+        
+    Input: a single article link
+    Output: a parsed article string from read_article()
 """
 def scrape_article(article_link):
     config.switch(article_link)
@@ -128,8 +132,8 @@ def scrape_article(article_link):
 
 """
 
-    Input:
-    Output:
+    Input: Raw HTML unstructured article
+    Output: 
 """
 def read_article(article) -> 'Full Article':
     html = article.read().decode("utf-8")

@@ -32,6 +32,7 @@ IGNORE=None
     Output: No Output
 """
 def switch(link) -> None:
+    switch_blank()
     if link.__contains__("cisa"):
         switch_cisa()
     elif link.__contains__("paloaltonetworks"):
@@ -180,3 +181,28 @@ def switch_hacker_news() -> None:
     PARAGRAPH_START = "<p"
     PARAGRAPH_END = "</p>"
     IGNORE = ["https://thehackernews.uk"]
+
+"""
+    Wipes the current configuration back to blank. 
+
+    Input: No Function Input
+    Output: No Function Output
+"""
+def switch_blank() -> None:
+    global TYPE, SPLICE, ARTICLE_START, ARTICLE_END, LINK_START, LINK_END, LINK_PREPEND, \
+        LINK_STRIP_START, LINK_STRIP_END, CONTENT_START, CONTENT_END, PARAGRAPH_START, \
+        PARAGRAPH_END, IGNORE
+    TYPE = ""
+    SPLICE = ""
+    ARTICLE_START = ""
+    ARTICLE_END = ""
+    LINK_START = ""
+    LINK_END = ""
+    LINK_PREPEND = ""
+    LINK_STRIP_START = ""
+    LINK_STRIP_END = ""
+    CONTENT_START = ""
+    CONTENT_END = ""
+    PARAGRAPH_START = ""
+    PARAGRAPH_END = ""
+    IGNORE = None

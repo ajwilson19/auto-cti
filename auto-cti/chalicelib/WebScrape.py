@@ -107,7 +107,7 @@ def format_article_string(article_string) -> 'Formatted Article Link':
     Input: 
     Output: 
 """
-def get_formatted_article(links) -> 'Formatted Article Link':
+def get_formatted_articles(links) -> 'Formatted Article Link':
     formatted = []
     for link in links:
         try:

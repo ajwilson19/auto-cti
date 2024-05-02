@@ -81,18 +81,19 @@ def tags():
     except Exception as e:
         return {"success": False, "error": e}
     
-# @app.route('/feed', methods=['GET'])
-# def feed():
-#     request = app.current_request.json_body
+@app.route('/feed', methods=['GET', 'POST'])
+def feed():
+    request = app.current_request.json_body
     
-#     try:
-#         cti = db['cti-blob']
-#         query = {} #"tags": {"$in": request['tags']}
-#         projection = {"time": 0}
-#         alerts = list(cti.find(query, projection))
-#         return {'success': True, 'alerts': alerts}
-#     except Exception as e:
-#         return {"success": False, "error": e}  
+    try:
+        cursor = db['cti-blob'].find({}, {'time':0})
+        documents = []
+        for document in cursor:
+            document['_id'] = str(document['_id'])
+            documents.append(document)
+            return {'success': True, 'results': documents}
+    except Exception as e:
+        return {"success": False, "error": e}  
     
 @app.route('/stats', methods=['GET'])
 def stats():

@@ -73,7 +73,7 @@ def upload(mongo, links):
 
             output = json.loads(response.choices[0].message.content)
             estimate = (response.usage.prompt_tokens / 1000) * 0.0005 + (response.usage.completion_tokens / 1000) * 0.0015
-            metadata = {"link": link, "cost": estimate, 'time': datetime.datetime.now()}
+            metadata = {"link": link, "cost": estimate}
             output["metadata"] = metadata
 
             db = mongo['test']['cti-blob']

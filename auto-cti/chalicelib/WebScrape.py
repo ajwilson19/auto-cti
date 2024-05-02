@@ -49,23 +49,32 @@ def get_article_links(page) -> list:
     html = page.read().decode("utf-8")
     articles_left = True
     articles = []
+
     html = html[html.find(config.SPLICE):]
+
     while articles_left:
         # sidx = Start Index
         # eidx = End Index
         sidx = html.find(config.ARTICLE_START)
         eidx = html.find(config.ARTICLE_END) + len(config.ARTICLE_END)
+
         article = html[sidx:eidx]
+
         if article != "": # YIPEEEEE
             articles.append(article[article.find(config.LINK_START):article.find(config.LINK_END)])
         else:
             articles_left = False
+
         html = html[eidx:]
+
     links = []
+
     for article in articles:
         link = format_article_string(article)
+
         if not check_ignore(link):
             links.append(link)
+
     return links
 
 """
@@ -81,6 +90,7 @@ def format_article_string(article_string) -> 'Formatted Article Link':
     # eidx = End Index
     sidx = article_string.find(config.LINK_STRIP_START) + len(config.LINK_STRIP_START)
     eidx = article_string.find(config.LINK_STRIP_END)
+
     return format_link(config.LINK_PREPEND + article_string[sidx:eidx])
 
 """
@@ -93,9 +103,9 @@ def format_article_string(article_string) -> 'Formatted Article Link':
 """
 
 """
-        
-    Input:
-    Output:
+    Gets a list of all of the articles from a list of links from the main article hub     
+    Input: 
+    Output: 
 """
 def get_formatted_articles(links) -> 'Formatted Article Link':
     formatted = []
@@ -107,7 +117,7 @@ def get_formatted_articles(links) -> 'Formatted Article Link':
     return formatted
 
 """
-
+    
     Input:
     Output:
 """

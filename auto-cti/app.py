@@ -83,17 +83,18 @@ def tags():
     
 @app.route('/feed', methods=['GET', 'POST'])
 def feed():
-    request = app.current_request.json_body
-    
     try:
-        cursor = db['cti-blob'].find({}, {'time':0})
-        documents = []
-        for document in cursor:
-            document['_id'] = str(document['_id'])
-            documents.append(document)
-            return {'success': True, 'results': documents}
+        request = app.current_request
+        if request.method == 'POST':
+            query = {"tags": { "$in": request.json_body['tags'] }}
+        else:
+            query = {}
+
+        alerts = list(db['cti-blob'].find(query, {'_id': 0}))
+
+        return {'success': True, 'results': alerts}
     except Exception as e:
-        return {"success": False, "error": e}  
+        return {"success": False, "error": e} 
     
 @app.route('/stats', methods=['GET'])
 def stats():

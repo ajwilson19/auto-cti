@@ -1,7 +1,14 @@
 """
 * Author: Dbog
 * Date: 4/21/2024
-* Description: Blah blah blah, Im the best fucking coder, Blah Blah Blah
+* Description: Full Webscraping program built to scrape article hubs and then their articles
+                into structured strings to send into chat GPT. scrape_link() is where it begins
+                to scrape articles from an article hub, then running the links through get_formatted_articles()
+                will get a list of the links and the string of the article in paragraph.
+* Notes:
+            5/5/2024: The articles have large amounts of whitespace and newline characters that could
+                        be spliced off to make the gpt runs even cheaper. something to look into -Dbog
+
 """
 
 import re
@@ -98,6 +105,10 @@ def format_article_string(article_string) -> 'Formatted Article Link':
 #
 # Single Article Scraping Functions
 # Description:
+#       Functions built to parse the actual valuable text out of the unstructured reports. gets the raw
+#           HTML for each link sent in from a source, and parses out all the valuable information from
+#           each paragraph, and returns a single string for a single article in a list of links combined
+#           with their article string.
 #
 ###########################################################################
 """
@@ -131,9 +142,12 @@ def scrape_article(article_link):
     return read_article(article)
 
 """
-
+    Reads the raw HTML to parse the paragraph data out of. utilizes Content Start and Content End to get where the
+        full article writing starts and ends, then reads through for each paragraph start and paragraph end. then finally
+        adds all the paragraphs into a single string, utilizing the remove_html() function to ensure no HMTL is left
+        
     Input: Raw HTML unstructured article
-    Output: 
+    Output: Full article with no HTML as a single string ready for GPT input
 """
 def read_article(article) -> 'Full Article':
     html = article.read().decode("utf-8")

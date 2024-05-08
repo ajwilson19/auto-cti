@@ -51,9 +51,9 @@ def login():
 def userconfig():
     request = app.current_request.json_body
     try:
-        if type(request['username']) == str and type(request['title']) == str and type(request['tags']) == list:
+        if type(request['username']) == str and type(request['title']) == str and type(request['config']) == list:
             config = db['config']
-            config.update_one({'user': request['username']}, {'$set': {"title": request['title'], 'tags': request['tags']}}, upsert=True)
+            config.update_one({'user': request['username'], 'title': request['title']}, {'$set': {"title": request['title'], 'config': request['config']}}, upsert=True)
             return {'success': True}
         else:
             return {'success': False, 'error': "Invalid request"}
@@ -71,15 +71,20 @@ def profiles():
     except Exception as e:
         return {"success": False, "error": e}
     
-@app.route('/tags', methods=['POST'])
+@app.route('/tags', methods=['GET', 'POST'])
 def tags():
-    request = app.current_request.json_body
     try:
-        config = db['config']
-        tags = config.find_one({"user": request['username'], "title": request["title"]})['config']
-        return {'success': True, 'titles': tags}
+        if app.current_request.method == 'GET':
+            all_tags = db['cti-blob'].distinct('tags')
+            return {'success': True, 'tags': all_tags}
+        else:
+            request = app.current_request.json_body
+        
+            config = db['config']
+            tags = config.find_one({"user": request['username'], "title": request["title"]})['config']
+            return {'success': True, 'tags': tags}
     except Exception as e:
-        return {"success": False, "error": e}
+            return {"success": False, "error": e}
     
 @app.route('/feed', methods=['GET', 'POST'])
 def feed():

@@ -32,31 +32,35 @@ if st.session_state['user']:
     profiles = requests.post(st.secrets['endpoint']+'profiles', json={'username': st.session_state['user']}).json()
     if profiles['success']:
 
-        if len(profiles['titles']):
-            config = st.selectbox("Profiles", profiles['titles'])
+        user_profiles = list(profiles['titles'])
+        user_profiles.append('*') 
+        config = st.selectbox("Profiles", user_profiles)
+
+        if config != '*':
             tags = requests.post(st.secrets['endpoint']+'tags', json={'username': st.session_state['user'], 'title': config}).json()
             alerts = requests.post(st.secrets['endpoint']+'feed', json={'tags': tags['tags']}).json()
-
-            if alerts['success']:
-
-                # Metrics
-                stats = requests.get(st.secrets['endpoint']+'stats').json()
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Flagged Alerts", len(alerts['results']), "")
-                col2.metric("Total Alerts", stats['count'], "")
-                col3.metric("New in last 12hr", stats['last12'], delta=str(stats['last1'])+" in the last hour")
-
-                # Display Alerts
-                for entry in alerts['results'][::-1]:
-                    with st.expander(entry["title"]):
-                        st.write(entry['summary'])
-                        bullet_list = "\n".join([f"* {item}" for item in entry["actionable_steps"]])
-                        st.markdown(bullet_list)
-                        st.link_button("Link", url=entry['metadata']['link'])
-
-            else:
-                st.error("Error fetching data")
         else:
-            st.warning("Create a user profile on the setting page")
+            alerts = requests.get(st.secrets['endpoint']+'feed').json()
+
+        if alerts['success']:
+
+            # Metrics
+            stats = requests.get(st.secrets['endpoint']+'stats').json()
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Flagged Alerts", len(alerts['results']), "")
+            col2.metric("Total Alerts", stats['count'], "")
+            col3.metric("New in last 12hr", stats['last12'], delta=str(stats['last1'])+" in the last hour")
+
+            # Display Alerts
+            for entry in alerts['results'][::-1]:
+                with st.expander(entry["title"]):
+                    st.write(entry['summary'])
+                    bullet_list = "\n".join([f"* {item}" for item in entry["actionable_steps"]])
+                    st.markdown(bullet_list)
+                    st.link_button("Link", url=entry['metadata']['link'])
+
+        else:
+            st.error("Error fetching data")
+        
 else:
     st.warning("Login or create an account")
